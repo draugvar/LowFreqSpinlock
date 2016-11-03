@@ -2,7 +2,6 @@
 // Created by Salvatore Rivieccio on 04/10/16.
 //
 #include "low_freq_spinlock.h"
-#include "util.h"
 
 void set_low_freq();
 void reset_low_freq();
@@ -35,6 +34,8 @@ void low_freq_op_unlock(low_freq_spinlock_t *lock)
 
 void set_low_freq()
 {
+    char *argv[3] = {"ioctl", "2", "-s"}; //param: name, tid, mode
+    ioctl_call(3, argv);
     int cpu_id = sched_getcpu();
     cpu_set_t cpuset;
     CPU_ZERO(&cpuset);
@@ -114,6 +115,8 @@ void reset_low_freq()
         printf("Error writing file!\n");
         exit(1);
     }
+    char *argv[3] = {"ioctl", "2", "-u"}; //param: name, tid, mode
+    ioctl_call(3, argv);
 
     close(fd_scaling_max);
 }

@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include "../LowFreqModule/ioctl.h"
 
 #ifndef CLIONPROJECTS_ADAPTIVE_SPINLOCK_H
 #define CLIONPROJECTS_ADAPTIVE_SPINLOCK_H

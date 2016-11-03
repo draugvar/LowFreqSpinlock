@@ -1,4 +1,4 @@
-OBJECTS=main.c low_freq_spinlock.c util.c
+OBJECTS=main.c low_freq_spinlock.c ../LowFreqModule/ioctl.c
 
 CC=gcc
 
