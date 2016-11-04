@@ -14,15 +14,18 @@ int fd_scaling_max = 0;
 
 void low_freq_op_lock(low_freq_spinlock_t *lock)
 {
-    while (!__sync_lock_test_and_set(&(lock)->exclusion, 1)) //invertito
+    if(!__sync_lock_test_and_set(&(lock)->exclusion, 1)) //invertire
     {
         set_low_freq();
-        while ((lock)->exclusion)
+        while(!__sync_lock_test_and_set(&(lock)->exclusion, 1)) //invertire
         {
-           break;//da togliere
+            while ((lock)->exclusion)
+            {
+                break;//da togliere
+            }
+            break; //da togliere
         }
         reset_low_freq();
-        break;//da togliere
     }
 }
 
@@ -32,7 +35,7 @@ void low_freq_op_unlock(low_freq_spinlock_t *lock)
     (lock)->exclusion = 0;
 }
 
-void set_low_freq()
+void inline set_low_freq() //da vedre inline
 {
     char *argv[3] = {"ioctl", "2", "-s"}; //param: name, tid, mode
     ioctl_call(3, argv);

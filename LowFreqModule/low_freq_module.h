@@ -24,6 +24,7 @@
 static int lfm_open(struct inode *, struct file *);
 static int lfm_release(struct inode *, struct file *);
 static long lfm_ioctl(struct file *f, unsigned int cmd, unsigned long arg);
+//int on_schedule();
 
 #define DEVICE_NAME "low_freq_module"  /* Device file name in /dev/ - not mandatory  */
 #define DEVICE_PATH "/dev/"DEVICE_NAME

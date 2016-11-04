@@ -59,14 +59,18 @@ static long lfm_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
     return 0;
 }
 
+int on_schedule(void)
+{
+
+}
+
 int init_module(void)
 {
-    printk(KERN_INFO "Inserting low_freq_module.\n");
     // scan of /proc/sys/kernel/threads-max in order to get max threads number
-    /*int fd_threads_max;
+    /*int fd_threads_max; VFS_OPEN!!!
     int number;
-    fd_threads_max = open("/proc/sys/kernel/threads-max", O_RDONLY);
-    if (fd_threads_max == -1)
+    fd_threads_max = open("/proc/sys/kernel/threads-max", O_RDONLY); vedere se riesco a leggerla sched.h
+    if (fd_threads_max == -1) current variable mi dice il task struct del prox processo.
     {
         printk(KERN_INFO "Error opening file!\n");
         return -1;
@@ -85,7 +89,7 @@ int init_module(void)
         return Major;
     }
     printk(KERN_INFO "Low_freq device registered, it is assigned major number %d\n", Major);
-
+    printk(KERN_INFO "The address of the function is 0x%p\n",on_schedule);
     /*
      * A non 0 return means init_module failed; module can't be loaded.
      */
