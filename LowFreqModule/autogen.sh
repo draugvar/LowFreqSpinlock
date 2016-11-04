@@ -23,6 +23,3 @@ grep '^staff:' /etc/group > /dev/null || group="wheel"
 mknod /dev/${device} c $major 0
 chgrp $group /dev/${device}
 chmod $mode /dev/${device}
-
-
-gcc ioctl.c -o ioctl
