@@ -61,7 +61,15 @@ static long lfm_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 
 int on_schedule(void)
 {
-
+    /*struct task_struct *task = current;
+    int pid = task->pid;
+    if(get_bitmap(pid))
+    {
+        // questo processo vuole viaggiare a velocità minima, check and set
+    } else
+    {
+        // questo processo non c'è, vedere se bisogna rialzare la velocità della cpu
+    }*/
 }
 
 int init_module(void)
