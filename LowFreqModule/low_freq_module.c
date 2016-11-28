@@ -61,7 +61,7 @@ static long lfm_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 
 int on_schedule(void)
 {
-    /*struct task_struct *task = current;
+    struct task_struct *task = current;
     int pid = task->pid;
     if(get_bitmap(pid))
     {
@@ -69,26 +69,15 @@ int on_schedule(void)
     } else
     {
         // questo processo non c'è, vedere se bisogna rialzare la velocità della cpu
-    }*/
+    }
+    return 0;
 }
 
 int init_module(void)
 {
-    // scan of /proc/sys/kernel/threads-max in order to get max threads number
-    /*int fd_threads_max; VFS_OPEN!!!
-    int number;
-    fd_threads_max = open("/proc/sys/kernel/threads-max", O_RDONLY); vedere se riesco a leggerla sched.h
-    if (fd_threads_max == -1) current variable mi dice il task struct del prox processo.
-    {
-        printk(KERN_INFO "Error opening file!\n");
-        return -1;
-    }
+    printk(KERN_INFO "Maximum number of threads for this machine: %d\n", nr_of_threads);
 
-    char min[2];
-    read(fd_threads_max, &min, sizeof(min));
-
-    close(fd_threads_max);*/
-    tid_table = create_bitmap(160000); // da cambiare
+    tid_table = create_bitmap(nr_of_threads);
 
     Major = register_chrdev(0, DEVICE_NAME, &fops);
     if (Major < 0)
@@ -97,7 +86,7 @@ int init_module(void)
         return Major;
     }
     printk(KERN_INFO "Low_freq device registered, it is assigned major number %d\n", Major);
-    printk(KERN_INFO "The address of the function is 0x%p\n",on_schedule);
+    printk(KERN_INFO "Address of on_schedule function is 0x%p\n",on_schedule);
     /*
      * A non 0 return means init_module failed; module can't be loaded.
      */

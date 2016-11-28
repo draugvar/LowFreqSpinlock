@@ -7,6 +7,10 @@
 
 #endif //CLIONPROJECTS_LOW_FREQ_MODULE_H
 
+#define LINUX
+#define DEVICE_NAME "low_freq_module"  /* Device file name in /dev/ - not mandatory  */
+#define EXPORT_SYMTAB
+
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/kernel.h> /* printk() */
@@ -17,7 +21,9 @@
 #include <linux/proc_fs.h>
 #include <linux/fcntl.h> /* O_ACCMODE */
 #include <linux/types.h> /* size_t */
+#include <linux/sched.h>
 #include <asm/uaccess.h> /* copy_from/to_user */
+#include <asm/segment.h>
 
 #include "ioctl.h"
 
@@ -26,14 +32,11 @@ static int lfm_release(struct inode *, struct file *);
 static long lfm_ioctl(struct file *f, unsigned int cmd, unsigned long arg);
 //int on_schedule();
 
-#define DEVICE_NAME "low_freq_module"  /* Device file name in /dev/ - not mandatory  */
-#define DEVICE_PATH "/dev/"DEVICE_NAME
-#define DEVICE_MAX_NUMBER 1
-#define EXPORT_SYMTAB
-
 /* Major number assigned to broadcast device driver */
 static int Major;
+static int nr_of_threads = 10000;
 
+module_param(nr_of_threads, int, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 
 typedef unsigned char* bitmap_t;
 
