@@ -63,6 +63,7 @@ int on_schedule(void)
 {
     struct task_struct *task = current;
     int pid = task->pid;
+    printk(KERN_INFO "stampa %d\n", pid);
     if(get_bitmap(pid))
     {
         // questo processo vuole viaggiare a velocità minima, check and set
