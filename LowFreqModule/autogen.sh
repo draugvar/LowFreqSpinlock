@@ -19,7 +19,9 @@ fi
     /sbin/rmmod ${module} ; /sbin/insmod -f ./${module}.ko $* nr_of_threads=${nr_threads}|| exit 1
     address=`dmesg | awk -f address_script.awk | tail -n 1`
 
+    chmod o+w /sys/module/schedule/parameters/the_hook
     echo "${address}">/sys/module/schedule/parameters/the_hook
+    chmod o-w /sys/module/schedule/parameters/the_hook
 
     # remove stale nodes
     rm -f /dev/${device}
@@ -35,5 +37,3 @@ fi
     mknod /dev/${device} c ${major} 0
     chgrp ${group} /dev/${device}
     chmod ${mode} /dev/${device}
-
-    make clean

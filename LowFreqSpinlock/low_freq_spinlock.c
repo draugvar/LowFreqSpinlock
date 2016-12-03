@@ -35,7 +35,7 @@ void low_freq_op_unlock(low_freq_spinlock_t *lock)
     (lock)->exclusion = 0;
 }
 
-void inline set_low_freq() //da vedre inline
+void inline set_low_freq() //da vedere inline
 {
     char *argv[3] = {"ioctl", "2", "-s"}; //param: name, tid, mode
     ioctl_call(3, argv);
