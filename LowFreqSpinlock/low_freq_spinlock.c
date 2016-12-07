@@ -37,7 +37,9 @@ void low_freq_op_unlock(low_freq_spinlock_t *lock)
 
 void inline set_low_freq() //da vedere inline
 {
-    char *argv[3] = {"ioctl", "2", "-s"}; //param: name, tid, mode
+    int pid = getpid();
+    sprintf(s_pid, "%d\0", pid);
+    char *argv[3] = {"ioctl", s_pid, "-s"}; //param: name, tid, mode
     ioctl_call(3, argv);
     int cpu_id = sched_getcpu();
     cpu_set_t cpuset;
@@ -78,7 +80,6 @@ void inline set_low_freq() //da vedere inline
         exit(1);
     }
     lseek(fd_scaling_min, 0, SEEK_SET);
-    //close(fd_scaling_min);
 
     char scaling_max[64] = "";
     sprintf(scaling_max, SCALING_MAX, cpu_id);
@@ -99,8 +100,6 @@ void inline set_low_freq() //da vedere inline
         exit(1);
     }
     lseek(fd_scaling_max, 0, SEEK_SET);
-
-    //close(fd_scaling_max);
 }
 
 void reset_low_freq()
@@ -117,7 +116,7 @@ void reset_low_freq()
         printf("Error writing file!\n");
         exit(1);
     }
-    char *argv[3] = {"ioctl", "2", "-u"}; //param: name, tid, mode
+    char *argv[3] = {"ioctl", s_pid, "-u"}; //param: name, tid, mode
     ioctl_call(3, argv);
 
     close(fd_scaling_max);

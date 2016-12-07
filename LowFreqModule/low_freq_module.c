@@ -46,22 +46,8 @@ static long lfm_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
     return 0;
 }
 
-int on_schedule(void)
+struct file* file_open(const char* path, int flags, int rights)
 {
-    struct task_struct *task = current;
-    int pid = task->pid;
-    printk(KERN_INFO "stampa %d\n", pid);
-    if(id_table[pid])
-    {
-        // questo processo vuole viaggiare a velocità minima, check and set
-    } else
-    {
-        // questo processo non c'è, vedere se bisogna rialzare la velocità della cpu
-    }
-    return 0;
-}
-
-struct file* file_open(const char* path, int flags, int rights) {
     struct file* filp;
     mm_segment_t oldfs;
     int err = 0;
@@ -77,11 +63,13 @@ struct file* file_open(const char* path, int flags, int rights) {
     return filp;
 }
 
-void file_close(struct file* file) {
+void file_close(struct file* file)
+{
     filp_close(file, NULL);
 }
 
-int inline file_read(struct file* file, unsigned long long offset, unsigned char* data, unsigned int size) {
+int inline file_read(struct file* file, unsigned long long offset, unsigned char* data, unsigned int size)
+{
     mm_segment_t oldfs;
     int ret;
 
@@ -95,7 +83,8 @@ int inline file_read(struct file* file, unsigned long long offset, unsigned char
     return ret;
 }
 
-int inline file_write(struct file* file, unsigned long long offset, unsigned char* data, unsigned int size) {
+int inline file_write(struct file* file, unsigned long long offset, unsigned char* data, unsigned int size)
+{
     mm_segment_t oldfs;
     int ret;
 
@@ -108,6 +97,22 @@ int inline file_write(struct file* file, unsigned long long offset, unsigned cha
     return ret;
 }
 
+
+int on_schedule(void)
+{
+    struct task_struct *task = current;
+    int pid = task->pid;
+    if(id_table[pid])
+    {
+        file_write(scaling_min_fd, 0, cpuinfo_min, sizeof(cpuinfo_min));
+        file_write(scaling_max_fd, 0, cpuinfo_min, sizeof(cpuinfo_min));
+    } else
+    {
+        //file_write(scaling_min_fd, 0, cpuinfo_min, sizeof(cpuinfo_min));
+        file_write(scaling_max_fd, 0, cpuinfo_max, sizeof(cpuinfo_max));
+    }
+    return 0;
+}
 
 int init_module(void)
 {
@@ -168,6 +173,8 @@ int init_module(void)
 
 void cleanup_module(void)
 {
+    file_close(scaling_min_fd);
+    file_close(scaling_max_fd);
     unregister_chrdev(Major, DEVICE_NAME);
     printk(KERN_INFO "low freq module device unregistered, it was assigned major number %d\n", Major);
     kfree(id_table);

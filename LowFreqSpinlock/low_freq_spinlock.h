@@ -44,3 +44,5 @@ typedef struct __low_freq_spinlock_t
 void low_freq_op_lock(low_freq_spinlock_t *);
 
 void low_freq_op_unlock(low_freq_spinlock_t *);
+
+char s_pid[4];
