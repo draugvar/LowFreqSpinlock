@@ -18,10 +18,6 @@ void tid_is_present(int fd, char *argv)
     {
         perror("lfm ioctl is present query\n");
     }
-    else
-    {
-        printf("%d\n", res);
-    }
 }
 
 void set_tid(int fd , char *argv)

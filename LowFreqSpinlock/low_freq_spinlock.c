@@ -101,7 +101,6 @@ void inline set_low_freq() //da vedere inline
     lseek(fd_scaling_max, 0, SEEK_SET);
 
     //close(fd_scaling_max);
-
 }
 
 void reset_low_freq()

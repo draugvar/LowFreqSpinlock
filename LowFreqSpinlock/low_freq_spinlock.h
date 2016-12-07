@@ -17,18 +17,18 @@
 
 #define VIRTUAL
 
-#ifdef  VIRTUAL
+#ifdef VIRTUAL
     #define CPUINFO_MIN "/home/draugvar/cpu/cpu%i/cpufreq/cpuinfo_min_freq"
-    #define SCALING_SET "/home/draugvar/cpu/cpu%i/cpufreq/scaling_setspeed"
-    #define SCALING_MAX "/home/draugvar/cpu/cpu%i/cpufreq/scaling_max_freq"
+    #define CPUINFO_MAX "/home/draugvar/cpu/cpu%i/cpufreq/cpuinfo_max_freq"
     #define SCALING_MIN "/home/draugvar/cpu/cpu%i/cpufreq/scaling_min_freq"
+    #define SCALING_MAX "/home/draugvar/cpu/cpu%i/cpufreq/scaling_max_freq"
 #endif
 
-#ifndef  VIRTUAL
+#ifndef VIRTUAL
     #define CPUINFO_MIN "/sys/devices/system/cpu/cpu%i/cpufreq/cpuinfo_min_freq"
-    #define SCALING_SET "/sys/devices/system/cpu/cpu%i/cpufreq/scaling_setspeed"
-    #define SCALING_MAX "/sys/devices/system/cpu/cpu%i/cpufreq/scaling_max_freq"
+    #define CPUINFO_MAX "/sys/devices/system/cpu/cpu%i/cpufreq/cpuinfo_max_freq"
     #define SCALING_MIN "/sys/devices/system/cpu/cpu%i/cpufreq/scaling_min_freq"
+    #define SCALING_MAX "/sys/devices/system/cpu/cpu%i/cpufreq/scaling_max_freq"
 #endif
 
 
@@ -39,7 +39,7 @@ typedef struct __low_freq_spinlock_t
 
 #define LOWFREQ_UNLOCKED (low_freq_spinlock_t) { 0 }
 
-#define adaptive_init(x)	do { (x)->lock = 0; } while (0)
+#define lowfreq_init(x)	do { (x)->lock = 0; } while (0)
 
 void low_freq_op_lock(low_freq_spinlock_t *);
 
