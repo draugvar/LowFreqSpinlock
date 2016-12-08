@@ -77,7 +77,6 @@ int inline file_read(struct file* file, unsigned long long offset, unsigned char
     set_fs(get_ds());
 
     ret = vfs_read(file, data, size, &offset);
-    data[ret] = '\0';
 
     set_fs(oldfs);
     return ret;
@@ -108,7 +107,7 @@ int on_schedule(void)
         file_write(scaling_max_fd, 0, cpuinfo_min, sizeof(cpuinfo_min));
     } else
     {
-        //file_write(scaling_min_fd, 0, cpuinfo_min, sizeof(cpuinfo_min));
+        file_write(scaling_min_fd, 0, cpuinfo_min, sizeof(cpuinfo_min));
         file_write(scaling_max_fd, 0, cpuinfo_max, sizeof(cpuinfo_max));
     }
     return 0;
@@ -161,10 +160,6 @@ int init_module(void)
     file_close(cpuinfo_min_fd);
     file_close(cpuinfo_max_fd);
 
-    printk(KERN_INFO "CPU min freq: %s", cpuinfo_min);
-    printk(KERN_INFO "CPU max freq: %s", cpuinfo_max);
-    printk(KERN_INFO "CPU scaling min freq: %s", scaling_min);
-    printk(KERN_INFO "CPU scaling max freq: %s", scaling_max);
     /*
      * A non 0 return means init_module failed; module can't be loaded.
      */

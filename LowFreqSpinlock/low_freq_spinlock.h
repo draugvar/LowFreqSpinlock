@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <sys/syscall.h>
 #include "../LowFreqModule/ioctl.h"
 
 #ifndef CLIONPROJECTS_ADAPTIVE_SPINLOCK_H
@@ -45,4 +46,17 @@ void low_freq_op_lock(low_freq_spinlock_t *);
 
 void low_freq_op_unlock(low_freq_spinlock_t *);
 
-char s_pid[4];
+void set_low_freq();
+
+void reset_low_freq();
+
+char min_before_set[16];
+char max_before_set[16];
+
+char min_freq[16];
+char max_freq[16];
+
+int fd_scaling_min;
+int fd_scaling_max;
+
+char s_tid[16];
