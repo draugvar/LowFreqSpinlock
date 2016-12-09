@@ -5,7 +5,7 @@
 #include "low_freq_module.h"
 
 unsigned inline int* create_id_table(int n) {
-    return kmalloc((size_t) n, GFP_KERNEL);
+    return kmalloc((size_t) n * sizeof(int), GFP_KERNEL);
 }
 
 static int lfm_open(struct inode *inode, struct file *filp)
@@ -101,8 +101,7 @@ int on_schedule(void)
 {
     struct task_struct *task = current;
     int pid = task->pid;
-    printk(KERN_INFO "PID: %d\n", pid);
-    printk(KERN_INFO "table value: %d\n", id_table[pid]);
+    printk(KERN_INFO "pid: %d\n", pid);
     if(id_table[pid] == 1)
     {
         file_write(scaling_min_fd, 0, cpuinfo_min, sizeof(cpuinfo_min));
@@ -118,7 +117,6 @@ int on_schedule(void)
 int init_module(void)
 {
     int cpu_id;
-    int i;
     struct file *cpuinfo_min_fd;
     struct file *cpuinfo_max_fd;
     char cpuinfo_min_path[64];
@@ -129,12 +127,7 @@ int init_module(void)
     printk(KERN_INFO "Maximum number of threads for this machine: %d\n", nr_of_threads);
 
     id_table = create_id_table(nr_of_threads);
-    memset(id_table, 0, nr_of_threads); // non funziona
-
-    for(i = 0; i < nr_of_threads; i++)
-    {
-        printk("cell %d: %d\n", i, id_table[i]);
-    }
+    memset(id_table, 0, nr_of_threads * sizeof(int)); // non funziona
 
     Major = register_chrdev(0, DEVICE_NAME, &fops);
     if (Major < 0)
@@ -157,7 +150,9 @@ int init_module(void)
     scaling_min_fd = file_open(scaling_min_path, O_RDWR, 0644);
     scaling_max_fd = file_open(scaling_max_path, O_RDWR, 0644);
 
-    if(cpuinfo_min_fd ==  NULL || cpuinfo_max_fd == NULL || scaling_min_fd == NULL || scaling_max_fd == NULL){
+    if(cpuinfo_min_fd ==  NULL || cpuinfo_max_fd == NULL || scaling_min_fd == NULL || scaling_max_fd == NULL)
+    {
+        printk(KERN_INFO "Registering device failed\n");
         return -1;
     }
 
@@ -167,8 +162,6 @@ int init_module(void)
     file_read(scaling_max_fd, 0, scaling_max, sizeof(scaling_max));
     file_close(cpuinfo_min_fd);
     file_close(cpuinfo_max_fd);
-
-    on_schedule();
 
     /*
      * A non 0 return means init_module failed; module can't be loaded.
