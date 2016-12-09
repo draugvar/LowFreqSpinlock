@@ -11,23 +11,6 @@
 #define DEVICE_NAME "low_freq_module"  /* Device file name in /dev/ - not mandatory  */
 #define EXPORT_SYMTAB
 
-#define VIRTUAL
-
-#ifdef VIRTUAL
-    #define CPUINFO_MIN "/home/draugvar/cpu/cpu%i/cpufreq/cpuinfo_min_freq"
-    #define CPUINFO_MAX "/home/draugvar/cpu/cpu%i/cpufreq/cpuinfo_max_freq"
-    #define SCALING_MIN "/home/draugvar/cpu/cpu%i/cpufreq/scaling_min_freq"
-    #define SCALING_MAX "/home/draugvar/cpu/cpu%i/cpufreq/scaling_max_freq"
-#endif
-
-#ifndef VIRTUAL
-    #define CPUINFO_MIN "/sys/devices/system/cpu/cpu%i/cpufreq/cpuinfo_min_freq"
-    #define CPUINFO_MAX "/sys/devices/system/cpu/cpu%i/cpufreq/cpuinfo_max_freq"
-    #define SCALING_MIN "/sys/devices/system/cpu/cpu%i/cpufreq/scaling_min_freq"
-    #define SCALING_MAX "/sys/devices/system/cpu/cpu%i/cpufreq/scaling_max_freq"
-#endif
-
-
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/kernel.h> /* printk() */
@@ -46,6 +29,8 @@
 #include <asm/smp.h>
 
 #include "ioctl.h"
+#include "../Utility/util.h"
+
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Salvatore Rivieccio");

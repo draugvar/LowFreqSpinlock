@@ -10,28 +10,13 @@
 #include <unistd.h>
 #include <sys/syscall.h>
 #include "../LowFreqModule/ioctl.h"
+#include "../Utility/util.h"
+
 
 #ifndef CLIONPROJECTS_ADAPTIVE_SPINLOCK_H
 #define CLIONPROJECTS_ADAPTIVE_SPINLOCK_H
 
 #endif //CLIONPROJECTS_ADAPTIVE_SPINLOCK_H
-
-#define VIRTUAL
-
-#ifdef VIRTUAL
-    #define CPUINFO_MIN "/home/draugvar/cpu/cpu%i/cpufreq/cpuinfo_min_freq"
-    #define CPUINFO_MAX "/home/draugvar/cpu/cpu%i/cpufreq/cpuinfo_max_freq"
-    #define SCALING_MIN "/home/draugvar/cpu/cpu%i/cpufreq/scaling_min_freq"
-    #define SCALING_MAX "/home/draugvar/cpu/cpu%i/cpufreq/scaling_max_freq"
-#endif
-
-#ifndef VIRTUAL
-    #define CPUINFO_MIN "/sys/devices/system/cpu/cpu%i/cpufreq/cpuinfo_min_freq"
-    #define CPUINFO_MAX "/sys/devices/system/cpu/cpu%i/cpufreq/cpuinfo_max_freq"
-    #define SCALING_MIN "/sys/devices/system/cpu/cpu%i/cpufreq/scaling_min_freq"
-    #define SCALING_MAX "/sys/devices/system/cpu/cpu%i/cpufreq/scaling_max_freq"
-#endif
-
 
 typedef struct __low_freq_spinlock_t
 {
