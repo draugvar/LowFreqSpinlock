@@ -12,7 +12,8 @@ make
 # clean old module and invoke insmod with all arguments we were passed
 # and use a pathname, as newer modutils don't look in . by default
 nr_threads=`cat /proc/sys/kernel/pid_max`
-sudo /sbin/rmmod ${module} ; sudo /sbin/insmod -f ./${module}.ko $* nr_of_threads=${nr_threads}|| exit 1
+n_proc=`nproc`
+sudo /sbin/rmmod ${module} ; sudo /sbin/insmod -f ./${module}.ko $* nr_of_threads=${nr_threads} n_proc=${n_proc}|| exit 1
 address=`dmesg | awk -f address_script.awk | tail -n 1`
 
 sudo chmod o+w /sys/module/schedule/parameters/the_hook
@@ -33,3 +34,5 @@ grep '^staff:' /etc/group > /dev/null || group="wheel"
 sudo mknod /dev/${device} c ${major} 0
 sudo chgrp ${group} /dev/${device}
 sudo chmod ${mode} /dev/${device}
+
+make clean

@@ -10,7 +10,6 @@
 #include <unistd.h>
 #include <sys/syscall.h>
 #include "../LowFreqModule/ioctl.h"
-#include "../Utility/util.h"
 
 
 #ifndef CLIONPROJECTS_ADAPTIVE_SPINLOCK_H

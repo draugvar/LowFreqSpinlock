@@ -5,7 +5,7 @@
 
 void low_freq_op_lock(low_freq_spinlock_t *lock)
 {
-    int cpu_id = sched_getcpu();
+    /*int cpu_id = sched_getcpu();
 
     char min_freq_path[64];
     char max_freq_path[64];
@@ -23,7 +23,7 @@ void low_freq_op_lock(low_freq_spinlock_t *lock)
     }
 
     read(min_freq_fd, &min_freq, sizeof(min_freq));
-    read(max_freq_fd, &max_freq, sizeof(max_freq));
+    read(max_freq_fd, &max_freq, sizeof(max_freq));*/
 
     if(!__sync_lock_test_and_set(&(lock)->exclusion, 1)) //invertire
     {
@@ -39,8 +39,8 @@ void low_freq_op_lock(low_freq_spinlock_t *lock)
         reset_low_freq();
     }
 
-    close(min_freq_fd);
-    close(max_freq_fd);
+    //close(min_freq_fd);
+    //close(max_freq_fd);
 }
 
 void low_freq_op_unlock(low_freq_spinlock_t *lock)
@@ -56,7 +56,7 @@ void inline set_low_freq() //da vedere inline
     char *argv[3] = {"ioctl", s_tid, "-s"}; //param: name, tid, mode
     ioctl_call(3, argv);
 
-    int cpu_id = sched_getcpu();
+    /*int cpu_id = sched_getcpu();
 
     char scaling_min[64];
     sprintf(scaling_min, SCALING_MIN, cpu_id);
@@ -90,12 +90,12 @@ void inline set_low_freq() //da vedere inline
         printf("Error writing file!\n");
         exit(1);
     }
-    lseek(fd_scaling_max, 0, SEEK_SET);
+    lseek(fd_scaling_max, 0, SEEK_SET);*/
 }
 
 void reset_low_freq()
 {
-    if (write(fd_scaling_min, &min_freq, sizeof(min_freq)) == -1)
+    /*if (write(fd_scaling_min, &min_freq, sizeof(min_freq)) == -1)
     {
         printf("Error writing file!\n");
         exit(1);
@@ -105,10 +105,10 @@ void reset_low_freq()
     {
         printf("Error writing file!\n");
         exit(1);
-    }
+    }*/
     char *argv[3] = {"ioctl", s_tid, "-u"}; //param: name, tid, mode
     ioctl_call(3, argv);
 
-    close(fd_scaling_min);
-    close(fd_scaling_max);
+    //close(fd_scaling_min);
+    //close(fd_scaling_max);
 }

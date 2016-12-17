@@ -27,29 +27,48 @@
 #include <asm/uaccess.h> /* copy_from/to_user */
 #include <asm/segment.h>
 #include <asm/smp.h>
+#include <asm/atomic.h>
 
 #include "ioctl.h"
-#include "../Utility/util.h"
 
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Salvatore Rivieccio");
 
+#define VIRTUAL
+
+#ifdef VIRTUAL
+    #define CPUINFO_MIN "/home/cpu/cpu%i/cpufreq/cpuinfo_min_freq"
+    #define CPUINFO_MAX "/home/cpu/cpu%i/cpufreq/cpuinfo_max_freq"
+    #define SCALING_MIN "/home/cpu/cpu%i/cpufreq/scaling_min_freq"
+    #define SCALING_MAX "/home/cpu/cpu%i/cpufreq/scaling_max_freq"
+#endif
+
+#ifndef VIRTUAL
+    #define CPUINFO_MIN "/sys/devices/system/cpu/cpu%i/cpufreq/cpuinfo_min_freq"
+    #define CPUINFO_MAX "/sys/devices/system/cpu/cpu%i/cpufreq/cpuinfo_max_freq"
+    #define SCALING_MIN "/sys/devices/system/cpu/cpu%i/cpufreq/scaling_min_freq"
+    #define SCALING_MAX "/sys/devices/system/cpu/cpu%i/cpufreq/scaling_max_freq"
+#endif
+
 static int lfm_open(struct inode *, struct file *);
 static int lfm_release(struct inode *, struct file *);
 static long lfm_ioctl(struct file *f, unsigned int cmd, unsigned long arg);
-//int on_schedule();
+
+atomic_t queue;
 
 /* Major number assigned to broadcast device driver */
 static int Major;
 static int nr_of_threads = 10000;
+static int n_proc = 8;
 
 module_param(nr_of_threads, int, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+module_param(n_proc, int, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 
 unsigned int *id_table;
 
-struct file *scaling_min_fd;
-struct file *scaling_max_fd;
+struct file **g_scaling_min_fd;
+struct file **g_scaling_max_fd;
 
 unsigned char cpuinfo_min[16];
 unsigned char cpuinfo_max[16];

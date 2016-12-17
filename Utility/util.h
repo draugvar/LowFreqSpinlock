@@ -28,19 +28,3 @@
  * Turn A into a string literal after macro-expanding it.
  */
 #define STRINGIZE(A) STRINGIZE_NX(A)
-
-#define VIRTUAL
-
-#ifdef VIRTUAL
-    #define CPUINFO_MIN "/home/cpu/cpu%i/cpufreq/cpuinfo_min_freq"
-    #define CPUINFO_MAX "/home/cpu/cpu%i/cpufreq/cpuinfo_max_freq"
-    #define SCALING_MIN "/home/cpu/cpu%i/cpufreq/scaling_min_freq"
-    #define SCALING_MAX "/home/cpu/cpu%i/cpufreq/scaling_max_freq"
-#endif
-
-#ifndef VIRTUAL
-    #define CPUINFO_MIN "/sys/devices/system/cpu/cpu%i/cpufreq/cpuinfo_min_freq"
-    #define CPUINFO_MAX "/sys/devices/system/cpu/cpu%i/cpufreq/cpuinfo_max_freq"
-    #define SCALING_MIN "/sys/devices/system/cpu/cpu%i/cpufreq/scaling_min_freq"
-    #define SCALING_MAX "/sys/devices/system/cpu/cpu%i/cpufreq/scaling_max_freq"
-#endif
