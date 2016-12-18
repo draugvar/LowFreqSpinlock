@@ -1,16 +1,24 @@
-OBJECTS=main.c low_freq_spinlock.c ../LowFreqModule/ioctl.c
+LOW=low_test.c ../LowFreqSpinlock/low_freq_spinlock.c ../LowFreqModule/ioctl.c
+NORMAL=normal_test.c ../Utility/normal_spinlock.c
 
 CC=gcc
 
 CFLAGS=#-g -Wall
-LIBS=#
+LIBS=-lpthread
 
-PROGRAM_NAME=lowfreq_spin
+LOW_TEST=lowfreq_spin
+NORMAL_TEST=normal_spin
 
 
+$(LOW_TEST):$(LOW)
+	$(CC) $(CFLAGS) -o $(LOW_TEST) $(LOW) $(LIBS)
 
-$(PROGRAM_NAME):$(OBJECTS)
-	$(CC) $(CFLAGS) -o $(PROGRAM_NAME) $(OBJECTS) $(LIBS)
+	@echo " "
+	@echo "     ### Compilazione completata! ###     "
+	@echo " "
+
+$(NORMAL_TEST):$(NORMAL)
+	$(CC) $(CFLAGS) -o $(NORMAL_TEST) $(NORMAL) $(LIBS)
 
 	@echo " "
 	@echo "     ### Compilazione completata! ###     "

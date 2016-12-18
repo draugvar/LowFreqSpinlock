@@ -27,7 +27,7 @@
 #include <asm/uaccess.h> /* copy_from/to_user */
 #include <asm/segment.h>
 #include <asm/smp.h>
-#include <asm/atomic.h>
+#include <asm/bitops.h>
 
 #include "ioctl.h"
 
@@ -55,7 +55,8 @@ static int lfm_open(struct inode *, struct file *);
 static int lfm_release(struct inode *, struct file *);
 static long lfm_ioctl(struct file *f, unsigned int cmd, unsigned long arg);
 
-atomic_t queue;
+//bitwise operation
+unsigned long queue;
 
 /* Major number assigned to broadcast device driver */
 static int Major;

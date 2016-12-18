@@ -58,15 +58,15 @@ int inline file_read(struct file* file, unsigned long long offset, unsigned char
 
 int inline file_write(struct file* file, unsigned long long offset, unsigned char* data, unsigned int size)
 {
-    mm_segment_t oldfs;
     int ret;
+    /*mm_segment_t oldfs;
 
     oldfs = get_fs();
-    set_fs(get_ds());
+    set_fs(get_ds());*/
 
     ret = vfs_write(file, data, size, &offset);
 
-    set_fs(oldfs);
+    //set_fs(oldfs);
     return ret;
 }
 
@@ -79,20 +79,26 @@ static long lfm_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
         case LFM_SET_TID:
             res = copy_from_user(&tid, (int *) arg, sizeof(int));
             id_table[tid] = 1;
-            atomic_inc(&queue);
-            printk(KERN_INFO "Setting for: %d", tid);
             cpu_id = smp_processor_id();
-            file_write(g_scaling_min_fd[cpu_id], 0, scaling_min, sizeof(scaling_min));
+
+            set_bit(cpu_id, &queue);
+            printk(KERN_INFO "Setting for %d on cpu %d\n", tid, cpu_id);
+
+            //file_write(g_scaling_min_fd[cpu_id], 0, scaling_min, sizeof(scaling_min));
             file_write(g_scaling_max_fd[cpu_id], 0, scaling_min, sizeof(scaling_min));
+            g_scaling_max_fd[cpu_id]->f_pos = 0;
             break;
         case LFM_UNSET_TID:
             res = copy_from_user(&tid, (int *) arg, sizeof(int));
             id_table[tid] = 0;
-            atomic_dec(&queue);
-            printk(KERN_INFO "Unsetting for: %d", tid);
             cpu_id = smp_processor_id();
-            file_write(g_scaling_min_fd[cpu_id], 0, scaling_min, sizeof(scaling_min));
+
+            clear_bit(cpu_id, &queue);
+            printk(KERN_INFO "Unsetting for %d on cpu %d\n", tid, cpu_id);
+
+            //file_write(g_scaling_min_fd[cpu_id], 0, scaling_min, sizeof(scaling_min));
             file_write(g_scaling_max_fd[cpu_id], 0, scaling_max, sizeof(scaling_max));
+            g_scaling_max_fd[cpu_id]->f_pos = 0;
             break;
         case LFM_IS_PRESENT:
             res = copy_from_user(&tid, (int *) arg, sizeof(int));
@@ -110,42 +116,51 @@ int on_schedule(void)
     struct task_struct *task = current;
     int pid = task->pid;
     int cpu_id = smp_processor_id();
-    //printk(KERN_INFO "pid: %d, running on cpu: %d\n", pid, cpu_id);
-    if(id_table[pid] == 1)
+    if(id_table[pid] == 1 && !test_bit(cpu_id, &queue))
     {
-        file_write(g_scaling_min_fd[cpu_id], 0, scaling_min, sizeof(scaling_min));
-        file_write(g_scaling_max_fd[cpu_id], 0, scaling_min, sizeof(scaling_min));
-    } else if(id_table[pid] == 0 && atomic_read(&queue) > 0)
+        //file_write(g_scaling_min_fd[cpu_id], 0, scaling_min, sizeof(scaling_min));
+        //file_write(g_scaling_max_fd[cpu_id], 0, scaling_min, sizeof(scaling_min));
+
+        //vfs_write(g_scaling_max_fd[cpu_id], scaling_min, sizeof(scaling_min), 0);
+        //g_scaling_max_fd[cpu_id]->f_pos = 0;
+        set_bit(cpu_id, &queue);
+        printk(KERN_INFO "il processo %d, richiesta su cpu %d\n", pid, cpu_id);
+    }
+    else if(id_table[pid] == 0 && test_bit(cpu_id, &queue))
     {
-        //printk(KERN_INFO "uguale 0 e arrivo qua, cpu_id: %d\n", cpu_id);
-        //printk(KERN_INFO "pointer: %p", g_scaling_min_fd[cpu_id]);
-        file_write(g_scaling_min_fd[cpu_id], 0, scaling_min, sizeof(scaling_min));
-        file_write(g_scaling_max_fd[cpu_id], 0, scaling_max, sizeof(scaling_max));
+        //file_write(g_scaling_min_fd[cpu_id], 0, scaling_min, sizeof(scaling_min));
+        //file_write(g_scaling_max_fd[cpu_id], 0, scaling_max, sizeof(scaling_max));
+
+        //vfs_write(g_scaling_max_fd[cpu_id], scaling_max, sizeof(scaling_max), 0);
+        //g_scaling_max_fd[cpu_id]->f_pos = 0;
+        clear_bit(cpu_id, &queue);
+        printk(KERN_INFO "il processo %d non è richiedente, alzo la cpu %d\n", pid, cpu_id);
     }
     return 0;
 }
 
 int init_module(void)
 {
-    atomic_set(&queue, 0);
+    int i;
 
     struct file *cpuinfo_min_fd[n_proc];
     struct file *cpuinfo_max_fd[n_proc];
-
-    g_scaling_min_fd = kmalloc((size_t) n_proc * sizeof(void *), GFP_KERNEL);
-    g_scaling_max_fd = kmalloc((size_t) n_proc * sizeof(void *), GFP_KERNEL);
 
     char cpuinfo_min_path[n_proc][64];
     char cpuinfo_max_path[n_proc][64];
     char scaling_min_path[n_proc][64];
     char scaling_max_path[n_proc][64];
 
+    g_scaling_min_fd = kmalloc((size_t) n_proc * sizeof(void *), GFP_KERNEL);
+    g_scaling_max_fd = kmalloc((size_t) n_proc * sizeof(void *), GFP_KERNEL);
+
+    queue = 0;
+
     printk(KERN_INFO "Maximum number of threads for this machine: %d\n", nr_of_threads);
 
     id_table = create_id_table(nr_of_threads);
     memset(id_table, 0, nr_of_threads * sizeof(int));
 
-    int i;
     for(i = 0; i < n_proc; i++)
     {
         sprintf(cpuinfo_min_path[i], CPUINFO_MIN, i);
@@ -166,8 +181,8 @@ int init_module(void)
 
         file_read(cpuinfo_min_fd[i], 0, cpuinfo_min, sizeof(cpuinfo_min));
         file_read(cpuinfo_max_fd[i], 0, cpuinfo_max, sizeof(cpuinfo_max));
-        file_read(g_scaling_min_fd[i], 0, scaling_min, sizeof(scaling_min)); //global?
-        file_read(g_scaling_max_fd[i], 0, scaling_max, sizeof(scaling_max)); //global?
+        file_read(g_scaling_min_fd[i], 0, scaling_min, sizeof(scaling_min));
+        file_read(g_scaling_max_fd[i], 0, scaling_max, sizeof(scaling_max));
         cpuinfo_min_fd[i]->f_pos = 0;
         cpuinfo_max_fd[i]->f_pos = 0;
         g_scaling_min_fd[i]->f_pos = 0;
@@ -207,6 +222,12 @@ int init_module(void)
             }
         }
         on_schedule();
+    }
+    int cpu_id = smp_processor_id();
+    for(i = 0; i < 1000; i++)
+    {
+        vfs_write(g_scaling_max_fd[cpu_id], scaling_max, sizeof(scaling_max), 0);
+        g_scaling_max_fd[cpu_id]->f_pos = 0;
     }*/
 
     Major = register_chrdev(0, DEVICE_NAME, &fops);
