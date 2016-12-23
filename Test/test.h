@@ -9,4 +9,4 @@
 
 #include <stdio.h>
 
-#define TIME 10000000
+#define TIME 1000000000

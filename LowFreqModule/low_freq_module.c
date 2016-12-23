@@ -59,20 +59,21 @@ int inline file_read(struct file* file, unsigned long long offset, unsigned char
 int inline file_write(struct file* file, unsigned long long offset, unsigned char* data, unsigned int size)
 {
     int ret;
-    /*mm_segment_t oldfs;
+    mm_segment_t oldfs;
 
     oldfs = get_fs();
-    set_fs(get_ds());*/
+    set_fs(get_ds());
 
     ret = vfs_write(file, data, size, &offset);
 
-    //set_fs(oldfs);
+    set_fs(oldfs);
     return ret;
 }
 
 static long lfm_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 {
     int res, tid, cpu_id;
+    int wd;
 
     switch (cmd)
     {
@@ -85,7 +86,8 @@ static long lfm_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
             printk(KERN_INFO "Setting for %d on cpu %d\n", tid, cpu_id);
 
             //file_write(g_scaling_min_fd[cpu_id], 0, scaling_min, sizeof(scaling_min));
-            file_write(g_scaling_max_fd[cpu_id], 0, scaling_min, sizeof(scaling_min));
+            wd = file_write(g_scaling_max_fd[cpu_id], 0, cpuinfo_min, sizeof(cpuinfo_min));
+            printk(KERN_INFO "Write value %d\n", wd);
             g_scaling_max_fd[cpu_id]->f_pos = 0;
             break;
         case LFM_UNSET_TID:
@@ -97,7 +99,7 @@ static long lfm_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
             printk(KERN_INFO "Unsetting for %d on cpu %d\n", tid, cpu_id);
 
             //file_write(g_scaling_min_fd[cpu_id], 0, scaling_min, sizeof(scaling_min));
-            file_write(g_scaling_max_fd[cpu_id], 0, scaling_max, sizeof(scaling_max));
+            file_write(g_scaling_max_fd[cpu_id], 0, cpuinfo_max, sizeof(cpuinfo_max));
             g_scaling_max_fd[cpu_id]->f_pos = 0;
             break;
         case LFM_IS_PRESENT:
@@ -183,6 +185,9 @@ int init_module(void)
         file_read(cpuinfo_max_fd[i], 0, cpuinfo_max, sizeof(cpuinfo_max));
         file_read(g_scaling_min_fd[i], 0, scaling_min, sizeof(scaling_min));
         file_read(g_scaling_max_fd[i], 0, scaling_max, sizeof(scaling_max));
+
+        //printk(KERN_INFO "CPU: %d\nmax_freq: %smin_freq: %s", i, cpuinfo_max, cpuinfo_min);
+
         cpuinfo_min_fd[i]->f_pos = 0;
         cpuinfo_max_fd[i]->f_pos = 0;
         g_scaling_min_fd[i]->f_pos = 0;
