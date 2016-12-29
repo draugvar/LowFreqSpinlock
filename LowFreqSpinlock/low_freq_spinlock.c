@@ -12,7 +12,7 @@ void low_freq_op_lock(low_freq_spinlock_t *lock)
         {
             while ((lock)->exclusion)
             {
-
+                ;
             }
         }
         reset_low_freq();

@@ -87,7 +87,7 @@ static long lfm_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 
             //file_write(g_scaling_min_fd[cpu_id], 0, scaling_min, sizeof(scaling_min));
             wd = file_write(g_scaling_max_fd[cpu_id], 0, cpuinfo_min, sizeof(cpuinfo_min));
-            printk(KERN_INFO "Write value %d\n", wd);
+            //printk(KERN_INFO "Write value %d\n", wd);
             g_scaling_max_fd[cpu_id]->f_pos = 0;
             break;
         case LFM_UNSET_TID:
