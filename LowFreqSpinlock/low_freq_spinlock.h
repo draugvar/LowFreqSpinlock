@@ -28,9 +28,9 @@ typedef struct __low_freq_spinlock_t
     volatile int exclusion;
 }low_freq_spinlock_t ;
 
-#define LOWFREQ_UNLOCKED (low_freq_spinlock_t) { 0 }
+#define LOW_FREQ_UNLOCKED (low_freq_spinlock_t) { 0 }
 
-#define lowfreq_init(x)	do { (x)->lock = 0; } while (0)
+#define low_freq_init(x)	do { (x)->lock = 0; } while (0)
 
 void low_freq_op_lock(low_freq_spinlock_t *);
 

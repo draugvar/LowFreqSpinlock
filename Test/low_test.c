@@ -38,7 +38,7 @@ void *threadFunc(void *arg)
 
 int main()
 {
-    try = LOWFREQ_UNLOCKED;
+    try = LOW_FREQ_UNLOCKED;
 
     pthread_t first;	// this is our thread identifier
     pthread_t second;	// this is our thread identifier
