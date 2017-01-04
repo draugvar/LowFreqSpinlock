@@ -24,10 +24,19 @@ void *threadFunc(void *arg)
 
 int main(int argc, char *argv[])
 {
-    int i, sleep;
+    int i, sleep, loop, c;
 
-    sleep = atoi(argv[1]);
     try = LOW_FREQ_UNLOCKED;
+    sleep = atoi(argv[1]);
+    loop = sleep;
+
+    while(1)
+    {
+        c++;
+        if(loop >= 90000000)
+            break;
+        loop += sleep;
+    }
 
     printf("main waiting for thread to terminate...\n");
 
@@ -36,12 +45,13 @@ int main(int argc, char *argv[])
     pthread_t pthread[LOOP];	// this is our thread identifier
     pthread_create(&pthread[0], NULL, threadFunc, (void*) sleep);
 
-    for(i = 1; i < LOOP; i++)
+    for(i = 1; i < c; i++)
     {
         pthread_create(&pthread[i], NULL, threadFunc, (void*) sleep);
 
         pthread_join(pthread[i-1], NULL);
     }
+    pthread_join(pthread[c-1], NULL);
 
     clock_t end = clock();
     double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
