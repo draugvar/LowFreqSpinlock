@@ -15,7 +15,7 @@ void normal_op_lock(normal_spinlock_t *lock)
         {
             while ((lock)->exclusion)
             {
-
+                ;
             }
         }
     }

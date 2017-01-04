@@ -35,7 +35,7 @@
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Salvatore Rivieccio");
 
-#define VIRTUAL
+//#define VIRTUAL
 
 #ifdef VIRTUAL
     #define CPUINFO_MIN "/home/cpu/cpu%i/cpufreq/cpuinfo_min_freq"

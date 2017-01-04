@@ -17,7 +17,7 @@ fi
     # and use a pathname, as newer modutils don't look in . by default
     nr_threads=`cat /proc/sys/kernel/pid_max`
     n_proc=`nproc`
-    /sbin/rmmod ${module} ; /sbin/insmod -f ./${module}.ko $* nr_of_threads=${nr_threads} n_proc=${n_proc}|| exit 1
+    /sbin/rmmod ${module} ; /sbin/insmod ./${module}.ko $* nr_of_threads=${nr_threads} n_proc=${n_proc}|| exit 1
     address=`dmesg | awk -f address_script.awk | tail -n 1`
 
     chmod o+w /sys/module/schedule/parameters/the_hook

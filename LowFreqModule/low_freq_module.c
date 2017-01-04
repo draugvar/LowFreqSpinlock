@@ -73,7 +73,6 @@ int inline file_write(struct file* file, unsigned long long offset, unsigned cha
 static long lfm_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 {
     int res, tid, cpu_id;
-    int wd;
 
     switch (cmd)
     {
@@ -86,8 +85,7 @@ static long lfm_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
             printk(KERN_INFO "Setting for %d on cpu %d\n", tid, cpu_id);
 
             //file_write(g_scaling_min_fd[cpu_id], 0, scaling_min, sizeof(scaling_min));
-            wd = file_write(g_scaling_max_fd[cpu_id], 0, cpuinfo_min, sizeof(cpuinfo_min));
-            //printk(KERN_INFO "Write value %d\n", wd);
+            file_write(g_scaling_max_fd[cpu_id], 0, cpuinfo_min, sizeof(cpuinfo_min));
             g_scaling_max_fd[cpu_id]->f_pos = 0;
             break;
         case LFM_UNSET_TID:
@@ -126,7 +124,6 @@ int on_schedule(void)
         //vfs_write(g_scaling_max_fd[cpu_id], scaling_min, sizeof(scaling_min), 0);
         //g_scaling_max_fd[cpu_id]->f_pos = 0;
         set_bit(cpu_id, &queue);
-        printk(KERN_INFO "il processo %d, richiesta su cpu %d\n", pid, cpu_id);
     }
     else if(id_table[pid] == 0 && test_bit(cpu_id, &queue))
     {
@@ -136,7 +133,6 @@ int on_schedule(void)
         //vfs_write(g_scaling_max_fd[cpu_id], scaling_max, sizeof(scaling_max), 0);
         //g_scaling_max_fd[cpu_id]->f_pos = 0;
         clear_bit(cpu_id, &queue);
-        printk(KERN_INFO "il processo %d non è richiedente, alzo la cpu %d\n", pid, cpu_id);
     }
     return 0;
 }

@@ -6,8 +6,8 @@ CC=gcc
 CFLAGS=#-g -Wall
 LIBS=-lpthread
 
-LOW_TEST=lowfreq_spin
-NORMAL_TEST=normal_spin
+LOW_TEST=lowfreq
+NORMAL_TEST=normal
 
 
 $(LOW_TEST):$(LOW)

@@ -9,4 +9,6 @@
 
 #include <stdio.h>
 
-#define TIME 1000000000
+#define TIME 10
+#define SLEEP 2000000
+#define LOOP 100000

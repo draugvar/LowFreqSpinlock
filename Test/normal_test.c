@@ -4,56 +4,51 @@
 
 #include "../Utility/normal_spinlock.h"
 #include <pthread.h>
+#include <unistd.h>
+#include <stdlib.h>
 #include "test.h"
 
 normal_spinlock_t try;
+int c = 0;
 
 void *threadFunc(void *arg)
 {
-    char *str;
-    volatile int i = 0;
-    volatile int j = 0;
-    volatile int k = 0;
-
-    str=(char*)arg;
-
     normal_op_lock(&try);
-    printf("%s running in critical section\n",str);
-    while(i < TIME)
-    {
-        while(j < TIME)
-        {
-            while(k < TIME)
-            {
-                k++;
-            }
-            j++;
-        }
-        ++i;
-    }
+
+    printf("thread %d running in critical section\n", c);
+    c++;
+    usleep((useconds_t) (int) arg);
+
     normal_op_unlock(&try);
 
     return NULL;
 }
 
 
-int main()
+int main(int argc, char *argv[])
 {
+    int i, sleep;
+
+    sleep = atoi(argv[1]);
     try = NORMAL_UNLOCKED;
 
-    pthread_t first;	// this is our thread identifier
-    pthread_t second;	// this is our thread identifier
-    pthread_t third;	// this is our thread identifier
-
     printf("main waiting for thread to terminate...\n");
-    pthread_create(&first,NULL,threadFunc,"first");
-    pthread_create(&second,NULL,threadFunc,"second");
-    pthread_create(&third,NULL,threadFunc,"third");
 
-    pthread_join(first,NULL);
-    pthread_join(second,NULL);
-    pthread_join(third,NULL);
-    printf("finished.\n");
+    clock_t begin = clock();
+
+    pthread_t pthread[LOOP];	// this is our thread identifier
+    pthread_create(&pthread[0], NULL, threadFunc, (void*) sleep);
+
+    for(i = 1; i < LOOP; i++)
+    {
+        pthread_create(&pthread[i], NULL, threadFunc, (void*) sleep);
+
+        pthread_join(pthread[i-1], NULL);
+    }
+
+    clock_t end = clock();
+    double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+    printf("finished in %f sec\n", time_spent);
 
     return 0;
 }
