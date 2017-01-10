@@ -32,10 +32,10 @@ typedef struct __low_freq_spinlock_t
 
 #define low_freq_init(x)	do { (x)->lock = 0; } while (0)
 
-void low_freq_op_lock(low_freq_spinlock_t *);
+void low_freq_lock(low_freq_spinlock_t *);
 
-void low_freq_op_unlock(low_freq_spinlock_t *);
+void low_freq_unlock(low_freq_spinlock_t *);
 
-void set_low_freq();
+void set_low_freq(char *);
 
-void reset_low_freq();
+void reset_low_freq(char *);

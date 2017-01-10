@@ -13,13 +13,13 @@ int c = 0;
 
 void *threadFunc(void *arg)
 {
-    normal_op_lock(&try);
+    normal_lock(&try);
 
     printf("thread %d running in critical section\n", c);
     c++;
     usleep((useconds_t) (int) arg);
 
-    normal_op_unlock(&try);
+    normal_unlock(&try);
 
     return NULL;
 }

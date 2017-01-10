@@ -16,6 +16,6 @@ typedef struct __normal_spinlock_t
 
 #define normal_init(x)	do { (x)->lock = 0; } while (0)
 
-void normal_op_lock(normal_spinlock_t *);
+void normal_lock(normal_spinlock_t *);
 
-void normal_op_unlock(normal_spinlock_t *);
+void normal_unlock(normal_spinlock_t *);

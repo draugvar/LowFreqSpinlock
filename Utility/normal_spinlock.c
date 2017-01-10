@@ -7,7 +7,7 @@
 //
 #include "normal_spinlock.h"
 
-void normal_op_lock(normal_spinlock_t *lock)
+void normal_lock(normal_spinlock_t *lock)
 {
     if(__sync_lock_test_and_set(&(lock)->exclusion, 1))
     {
@@ -21,7 +21,7 @@ void normal_op_lock(normal_spinlock_t *lock)
     }
 }
 
-void normal_op_unlock(normal_spinlock_t *lock)
+void normal_unlock(normal_spinlock_t *lock)
 {
     __sync_synchronize(); // Memory barrier.
     (lock)->exclusion = 0;

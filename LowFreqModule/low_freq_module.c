@@ -182,8 +182,6 @@ int init_module(void)
         file_read(g_scaling_min_fd[i], 0, scaling_min, sizeof(scaling_min));
         file_read(g_scaling_max_fd[i], 0, scaling_max, sizeof(scaling_max));
 
-        //printk(KERN_INFO "CPU: %d\nmax_freq: %smin_freq: %s", i, cpuinfo_max, cpuinfo_min);
-
         cpuinfo_min_fd[i]->f_pos = 0;
         cpuinfo_max_fd[i]->f_pos = 0;
         g_scaling_min_fd[i]->f_pos = 0;
@@ -192,44 +190,6 @@ int init_module(void)
         file_close(cpuinfo_min_fd[i]);
         file_close(cpuinfo_max_fd[i]);
     }
-
-    /*unsigned char string_min[64];
-    unsigned char string_max[64];
-    unsigned char hello_min[64];
-    unsigned char hello_max[64];
-    int x;
-
-    for(i = 0; i < 1; i++)
-    {
-        for(x = 0; x < n_proc; x++)
-        {
-            if(g_scaling_max_fd[x] == NULL || g_scaling_min_fd[x] == NULL)
-            {
-                printk(KERN_INFO"niente da fare\n");
-            } else
-            {
-                file_read(g_scaling_min_fd[x], 0, string_min, sizeof(string_min));
-                file_read(g_scaling_max_fd[x], 0, string_max, sizeof(string_max));
-                //printk(KERN_INFO "freq! %s %s", string_min, string_max);
-                file_write(g_scaling_min_fd[x], 0, "hello\n", sizeof("hello\n"));
-                file_write(g_scaling_max_fd[x], 0, "hello\n", sizeof("hello\n"));
-
-                file_read(g_scaling_min_fd[x], 0, hello_min, sizeof(string_min));
-                file_read(g_scaling_max_fd[x], 0, hello_max, sizeof(string_max));
-                //printk(KERN_INFO "freq! %s %s", hello_min, hello_max);
-                file_write(g_scaling_min_fd[x], 0, scaling_min, sizeof(scaling_min));
-                file_write(g_scaling_max_fd[x], 0, scaling_max, sizeof(scaling_max));
-                printk(KERN_INFO "cpu %d, %p %p\n", x, g_scaling_min_fd[x], g_scaling_max_fd[x]);
-            }
-        }
-        on_schedule();
-    }
-    int cpu_id = smp_processor_id();
-    for(i = 0; i < 1000; i++)
-    {
-        vfs_write(g_scaling_max_fd[cpu_id], scaling_max, sizeof(scaling_max), 0);
-        g_scaling_max_fd[cpu_id]->f_pos = 0;
-    }*/
 
     Major = register_chrdev(0, DEVICE_NAME, &fops);
     if (Major < 0)

@@ -14,9 +14,9 @@ void *threadFunc(void *arg)
 
     while(sleep < 90000000)
     {
-        low_freq_op_lock(&try);
+        low_freq_lock(&try);
         usleep((useconds_t) (int) arg);
-        low_freq_op_unlock(&try);
+        low_freq_unlock(&try);
         sleep += (int) arg;
     }
     return NULL;
