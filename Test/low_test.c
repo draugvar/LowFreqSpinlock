@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
         loop += sleep;
     }
 
-    printf("main waiting for thread to terminate...%d\n", c);
+    printf("main waiting for %d threads to terminate...\n", c);
 
     clock_t begin = clock();
 

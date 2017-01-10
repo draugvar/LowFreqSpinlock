@@ -121,8 +121,8 @@ int on_schedule(void)
         //file_write(g_scaling_min_fd[cpu_id], 0, scaling_min, sizeof(scaling_min));
         //file_write(g_scaling_max_fd[cpu_id], 0, scaling_min, sizeof(scaling_min));
 
-        //vfs_write(g_scaling_max_fd[cpu_id], cpuinfo_min, sizeof(cpuinfo_min), 0);
-        //g_scaling_max_fd[cpu_id]->f_pos = 0;
+        vfs_write(g_scaling_max_fd[cpu_id], cpuinfo_min, sizeof(cpuinfo_min), 0);
+        g_scaling_max_fd[cpu_id]->f_pos = 0;
         set_bit(cpu_id, &queue);
     }
     else if(id_table[pid] == 0 && test_bit(cpu_id, &queue))
@@ -130,8 +130,8 @@ int on_schedule(void)
         //file_write(g_scaling_min_fd[cpu_id], 0, scaling_min, sizeof(scaling_min));
         //file_write(g_scaling_max_fd[cpu_id], 0, scaling_max, sizeof(scaling_max));
 
-        //vfs_write(g_scaling_max_fd[cpu_id], cpuinfo_max, sizeof(cpuinfo_max), 0);
-        //g_scaling_max_fd[cpu_id]->f_pos = 0;
+        vfs_write(g_scaling_max_fd[cpu_id], cpuinfo_max, sizeof(cpuinfo_max), 0);
+        g_scaling_max_fd[cpu_id]->f_pos = 0;
         clear_bit(cpu_id, &queue);
     }
     return 0;
