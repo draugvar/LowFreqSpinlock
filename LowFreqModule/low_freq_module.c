@@ -121,7 +121,7 @@ int on_schedule(void)
         //file_write(g_scaling_min_fd[cpu_id], 0, scaling_min, sizeof(scaling_min));
         //file_write(g_scaling_max_fd[cpu_id], 0, scaling_min, sizeof(scaling_min));
 
-        //vfs_write(g_scaling_max_fd[cpu_id], scaling_min, sizeof(scaling_min), 0);
+        //vfs_write(g_scaling_max_fd[cpu_id], cpuinfo_min, sizeof(cpuinfo_min), 0);
         //g_scaling_max_fd[cpu_id]->f_pos = 0;
         set_bit(cpu_id, &queue);
     }
@@ -130,7 +130,7 @@ int on_schedule(void)
         //file_write(g_scaling_min_fd[cpu_id], 0, scaling_min, sizeof(scaling_min));
         //file_write(g_scaling_max_fd[cpu_id], 0, scaling_max, sizeof(scaling_max));
 
-        //vfs_write(g_scaling_max_fd[cpu_id], scaling_max, sizeof(scaling_max), 0);
+        //vfs_write(g_scaling_max_fd[cpu_id], cpuinfo_max, sizeof(cpuinfo_max), 0);
         //g_scaling_max_fd[cpu_id]->f_pos = 0;
         clear_bit(cpu_id, &queue);
     }
@@ -139,7 +139,7 @@ int on_schedule(void)
 
 int init_module(void)
 {
-    int i;
+    int i, j;
 
     struct file *cpuinfo_min_fd[n_proc];
     struct file *cpuinfo_max_fd[n_proc];
@@ -155,7 +155,6 @@ int init_module(void)
     queue = 0;
 
     printk(KERN_INFO "Maximum number of threads for this machine: %d\n", nr_of_threads);
-
     id_table = create_id_table(nr_of_threads);
     memset(id_table, 0, nr_of_threads * sizeof(int));
 
@@ -174,6 +173,16 @@ int init_module(void)
         if(cpuinfo_min_fd[i] ==  NULL || cpuinfo_max_fd[i] == NULL || g_scaling_min_fd[i] == NULL || g_scaling_max_fd[i] == NULL)
         {
             printk(KERN_INFO "Registering device failed\n");
+            for(j = 0; j < i; j++)
+            {
+                file_close(cpuinfo_min_fd[j]);
+                file_close(cpuinfo_max_fd[j]);
+                file_close(g_scaling_min_fd[j]);
+                file_close(g_scaling_max_fd[j]);
+            }
+            kfree(id_table);
+            kfree(g_scaling_min_fd);
+            kfree(g_scaling_min_fd);
             return -1;
         }
 
