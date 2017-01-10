@@ -6,14 +6,14 @@
 #include "test.h"
 
 low_freq_spinlock_t try;
-int c = 0;
+int n = 1;
 
 void *threadFunc(void *arg)
 {
     low_freq_lock(&try);
 
-    printf("thread %d running in critical section\n", c);
-    c++;
+    printf("thread %d running in critical section\n", n);
+    n++;
     usleep((useconds_t) (int) arg);
 
     low_freq_unlock(&try);
@@ -29,6 +29,7 @@ int main(int argc, char *argv[])
     try = LOW_FREQ_UNLOCKED;
     sleep = atoi(argv[1]);
     loop = sleep;
+    c = 0;
 
     while(1)
     {
@@ -38,7 +39,7 @@ int main(int argc, char *argv[])
         loop += sleep;
     }
 
-    printf("main waiting for thread to terminate...\n");
+    printf("main waiting for thread to terminate...%d\n", c);
 
     clock_t begin = clock();
 
