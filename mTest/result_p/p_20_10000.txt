@@ -1,0 +1,1 @@
+Benckmark completed in 10.002680 sec	 critical sections per sec: 22928.355201	 energy: 3551.231445
