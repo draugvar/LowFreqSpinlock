@@ -28,10 +28,10 @@ void set_tid(int fd , char *argv)
     {
         perror("lfm ioctl set tid\n");
     }
-    else
+    /*else
     {
         printf("Process with tid %d set\n", res);
-    }
+    }*/
 }
 
 void unset_tid(int fd , char *argv)
@@ -42,10 +42,10 @@ void unset_tid(int fd , char *argv)
     {
         perror("lfm ioctl unset tid\n");
     }
-    else
+    /*else
     {
         printf("Process with tid %d unset\n", res);
-    }
+    }*/
 }
 
 int ioctl_call(int argc, char *argv[])

@@ -82,7 +82,7 @@ static long lfm_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
             cpu_id = smp_processor_id();
 
             set_bit(cpu_id, &queue);
-            printk(KERN_INFO "Setting for %d on cpu %d\n", tid, cpu_id);
+            //printk(KERN_INFO "Setting for %d on cpu %d\n", tid, cpu_id);
 
             //file_write(g_scaling_min_fd[cpu_id], 0, scaling_min, sizeof(scaling_min));
             file_write(g_scaling_max_fd[cpu_id], 0, cpuinfo_min, sizeof(cpuinfo_min));
@@ -94,7 +94,7 @@ static long lfm_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
             cpu_id = smp_processor_id();
 
             clear_bit(cpu_id, &queue);
-            printk(KERN_INFO "Unsetting for %d on cpu %d\n", tid, cpu_id);
+            //printk(KERN_INFO "Unsetting for %d on cpu %d\n", tid, cpu_id);
 
             //file_write(g_scaling_min_fd[cpu_id], 0, scaling_min, sizeof(scaling_min));
             file_write(g_scaling_max_fd[cpu_id], 0, cpuinfo_max, sizeof(cpuinfo_max));
@@ -119,18 +119,20 @@ int on_schedule(void)
     if(id_table[pid] == 1 && !test_bit(cpu_id, &queue))
     {
         //file_write(g_scaling_min_fd[cpu_id], 0, scaling_min, sizeof(scaling_min));
-        //file_write(g_scaling_max_fd[cpu_id], 0, scaling_min, sizeof(scaling_min));
+        //file_write(g_scaling_max_fd[cpu_id], 0, cpuinfo_min, sizeof(cpuinfo_min));
 
-        vfs_write(g_scaling_max_fd[cpu_id], cpuinfo_min, sizeof(cpuinfo_min), 0);
+        //vfs_write(g_scaling_max_fd[cpu_id], cpuinfo_min, sizeof(cpuinfo_min), 0);
+        file_write(g_scaling_max_fd[cpu_id], 0, cpuinfo_min, sizeof(cpuinfo_min));
         g_scaling_max_fd[cpu_id]->f_pos = 0;
         set_bit(cpu_id, &queue);
     }
     else if(id_table[pid] == 0 && test_bit(cpu_id, &queue))
     {
         //file_write(g_scaling_min_fd[cpu_id], 0, scaling_min, sizeof(scaling_min));
-        //file_write(g_scaling_max_fd[cpu_id], 0, scaling_max, sizeof(scaling_max));
+        //file_write(g_scaling_max_fd[cpu_id], 0, cpuinfo_max, sizeof(cpuinfo_max));
 
-        vfs_write(g_scaling_max_fd[cpu_id], cpuinfo_max, sizeof(cpuinfo_max), 0);
+        //vfs_write(g_scaling_max_fd[cpu_id], cpuinfo_max, sizeof(cpuinfo_max), 0);
+        file_write(g_scaling_max_fd[cpu_id], 0, cpuinfo_max, sizeof(cpuinfo_max));
         g_scaling_max_fd[cpu_id]->f_pos = 0;
         clear_bit(cpu_id, &queue);
     }
