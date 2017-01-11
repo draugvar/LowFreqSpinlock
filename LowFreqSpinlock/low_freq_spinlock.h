@@ -36,6 +36,6 @@ void low_freq_lock(low_freq_spinlock_t *);
 
 void low_freq_unlock(low_freq_spinlock_t *);
 
-void set_low_freq(char *);
+void set_low_freq();
 
-void reset_low_freq(char *);
+void reset_low_freq();
