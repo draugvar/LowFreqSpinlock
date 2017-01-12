@@ -3,7 +3,7 @@
 //
 #include "low_freq_spinlock.h"
 
-void low_freq_lock(low_freq_spinlock_t *lock)
+void low_freq_op_lock(low_freq_spinlock_t *lock)
 {
     if(__sync_lock_test_and_set(&(lock)->exclusion, 1))
     {
@@ -20,7 +20,7 @@ void low_freq_lock(low_freq_spinlock_t *lock)
     }
 }
 
-void low_freq_unlock(low_freq_spinlock_t *lock)
+void low_freq_op_unlock(low_freq_spinlock_t *lock)
 {
     __sync_synchronize(); // Memory barrier.
     (lock)->exclusion = 0;
